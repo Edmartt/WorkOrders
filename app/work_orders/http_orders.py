@@ -12,6 +12,7 @@ class OrdersHTTP(MethodView):
         self.order = order
         self.customer = customer
 
+    #orders by date range
     def get(self):
         since = request.args.get('since')
         until = request.args.get('until')
@@ -41,6 +42,7 @@ class OrdersHTTP(MethodView):
         return jsonify({'orders': data})
 
     
+    #creates order
     def post(self):
         request_data = request.get_json()
         self.order.customer_id = request_data.get('customer_id')
@@ -64,6 +66,7 @@ class OrdersHTTP(MethodView):
 
 class HTTPOrderID(MethodView):
 
+    #get order by customer id
     def get(self, id:str):
         #data = request.get_json()
         customer_id = id
@@ -95,6 +98,7 @@ class HTTPOrderID(MethodView):
 
         return jsonify({'response': data})
 
+#change status order
 class StatusOrderChange(MethodView):
 
     def post(self):
