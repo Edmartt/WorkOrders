@@ -1,0 +1,35 @@
+version: "3"
+
+services:
+  db:
+    image: "postgres:15.1"
+
+    restart: always
+
+    ports:
+      - 7000:5432
+    
+    env_file:
+      - ".env"
+    environment:
+      PGDATA: /var/lib/postgresql/data/orders/
+
+    volumes:
+      - pg-data:/var/lib/postgresql/data/orders
+
+    networks:
+      - orders
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready", "-d", "postgres"]
+      interval: 30s
+      timeout: 60s
+      retries: 5
+      start_period: 80s  
+
+networks:
+  orders:
+    driver: bridge
+
+volumes:
+  pg-data:
