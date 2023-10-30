@@ -43,7 +43,15 @@ source <virtual-environment-name>/bin/activate
 source .envrc
 ```
 
-6. Run with
+6. Migrations
+
+We need migrations for our data models
+
+```
+flask db upgrade
+```
+
+7. Run with
 
 ```
 flask run
