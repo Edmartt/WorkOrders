@@ -43,6 +43,12 @@ source <virtual-environment-name>/bin/activate
 source .envrc
 ```
 
+#### Note
+
+Remember to set a .env file for docker-compose postgres
+
+![env.example](https://github.com/Edmartt/WorkOrders/blob/dev/env.example)
+
 6. Migrations
 
 We need migrations for our data models
