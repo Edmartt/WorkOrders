@@ -49,6 +49,6 @@ source .envrc
 flask run
 ```
 
-    #### Note
+#### Note
 
 For requesting the api docs after running the project just go to `/api/docs`
