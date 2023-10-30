@@ -8,6 +8,7 @@ class CustomerHTTP(MethodView):
     def __init__(self, customer: Customer) -> None:
         self.customer = customer
 
+    #customer by active status
     def get(self):
         active_customer_list_objects = Customer.query.filter(Customer.is_active).all()
         active_users =[]
@@ -25,6 +26,7 @@ class CustomerHTTP(MethodView):
         return jsonify({'active_users':active_users})
 
 
+    #creates customer
     def post(self):
         request_data = request.get_json()
 
