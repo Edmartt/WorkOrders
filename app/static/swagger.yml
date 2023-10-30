@@ -1,0 +1,218 @@
+openapi: 3.0.0
+info:
+  title: Work Orders API
+  description: API for retrieving information about work orders
+  version: 1.0.0
+servers:
+  - url: http://{domain}:{port}/api/v1/
+    description: Development Server
+    variables: 
+      domain:
+        default: localhost
+      port:
+        default: '5000'
+paths:
+  /customer:
+    get:
+      summary: Get Active Customers
+      description: |
+        This endpoint allows you to retrieve a list of active customers.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  response:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          description: Customer id
+                        first_name:
+                          type: string
+                          description: Customer first name
+                        last_name:
+                          type: string
+                          description: Customer last name
+                        start_date:
+                          type: string
+                          description: The moment when the first order is finished
+                        end_date:
+                          type: string
+                          description: .
+                        is_active:
+                          type: boolean
+                          description: Customer status
+                          default: false
+
+    post:
+      summary: Creates New Customers
+      description: This endpoint allows you to create new customers
+      requestBody: 
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                first_name:
+                  type: string
+                last_name: 
+                  type: string
+                address:
+                  type: string
+        required: true
+
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  response:
+                    type: string
+                    items:
+                      type: object
+                      properties:
+                        customer_id:
+                          type: string
+                          description: Created customer ID
+  
+  /orders/range:
+    get:
+      summary: Work Orders
+      description: This endpoint allows you to retrieve a list of work orders by date range
+      parameters:
+        - name: since
+          in: query
+          description: start range
+          schema:
+            type: date
+          example: 2023-10-01
+
+        - name: until
+          in: query
+          description: end range
+          schema:
+            type: date
+          example: 2023-10-30
+
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  response:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        customer_id:
+                          type: string
+                          description: Customer id
+                        customer_first_name:
+                          type: string
+                          description: Customer first name
+                        customer_last_name:
+                          type: string
+                          description: Customer last name
+                        customer_ start_date:
+                          type: string
+                          description: The moment when the first order is finished
+                        customer_end_date:
+                          type: string
+                          description: .
+                        customer_is_active:
+                          type: boolean
+                          description: Customer status
+                          default: false
+                        order_created_at:
+                          type: date
+                          description: date when the order was created
+                        order_id:
+                          type: string
+                          description: order identifier
+                        order_planned_date_begin:
+                          type: date
+                        order_planned_date_end:
+                          type: date
+                        order_status:
+                          type: string
+                          description: order status according if done, cancelled or new
+                          example: new
+                        order_title:
+                          type: string
+                          description: orders title
+
+
+
+  /orders/{id}:
+    get:
+      description: This endpoint allows to retrieve a list of work orders by customer ID
+      parameters:
+        - in: path
+          name: id
+          description: customer id
+          schema:
+            type: string
+            required: true
+          example: 290c21e3-eb65-4a6f-ac45-4ad7e01f3372
+
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  response:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        customer_id:
+                          type: string
+                          description: Customer id
+                        customer_first_name:
+                          type: string
+                          description: Customer first name
+                        customer_last_name:
+                          type: string
+                          description: Customer last name
+                        customer_ start_date:
+                          type: string
+                          description: The moment when the first order is finished
+                        customer_end_date:
+                          type: string
+                          description: .
+                        customer_is_active:
+                          type: boolean
+                          description: Customer status
+                          default: false
+                        order_created_at:
+                          type: date
+                          description: date when the order was created
+                        order_id:
+                          type: string
+                          description: order identifier
+                        order_planned_date_begin:
+                          type: date
+                        order_planned_date_end:
+                          type: date
+                        order_status:
+                          type: string
+                          description: order status according if done, cancelled or new
+                          example: new
+                        order_title:
+                          type: string
+                          description: orders title
