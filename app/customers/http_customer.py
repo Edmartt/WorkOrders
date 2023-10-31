@@ -23,7 +23,9 @@ class CustomerHTTP(MethodView):
                 'end_date': user.end_date,
                 'is_active': user.is_active
                 })
-        return jsonify({'active_users':active_users})
+        if len(active_users) == 0:
+            return jsonify({'response': 'there is no customers with active status'}), 200
+        return jsonify({'active_users':active_users}), 200
 
 
     #creates customer
@@ -33,6 +35,11 @@ class CustomerHTTP(MethodView):
         self.customer.first_name = request_data.get('first_name')
         self.customer.last_name = request_data.get('last_name')
         self.customer.address = request_data.get('address')
+
+        if self.customer.first_name == None or \
+                self.customer.last_name == None or \
+                self.customer.address == None:
+                    return jsonify({'response': 'Mandatory information missing'}), 400
 
         db.session.add(self.customer)
         db.session.commit()
