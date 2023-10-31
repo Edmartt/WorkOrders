@@ -1,9 +1,10 @@
 from datetime import datetime
 from typing import OrderedDict
-from flask import request, jsonify
+from flask import json, request, jsonify
 from flask.views import MethodView
 from app import db
 from app.models import Customer, WorkOrder
+from .helpers.date_format_check import check_date_format
 
 
 class OrdersHTTP(MethodView):
@@ -16,6 +17,16 @@ class OrdersHTTP(MethodView):
     def get(self):
         since = request.args.get('since')
         until = request.args.get('until')
+
+        if since is None or until is None:
+            return jsonify({'response': 'wrong date parameter'}), 400
+
+        check_since_date = check_date_format(since)
+        check_until_date = check_date_format(until)
+
+        if type(check_since_date) == ValueError or \
+                type(check_until_date) == ValueError:
+                    return jsonify({'response': 'wrong date format. Use YYYY-MM-DD'}), 400
 
         orders = (db.session.query(WorkOrder, Customer).join(Customer, WorkOrder.customer_id == Customer.id).filter(WorkOrder.created_at.between(since, until)).all())
 
@@ -50,13 +61,16 @@ class OrdersHTTP(MethodView):
         self.order.title = request_data.get('title')
         self.order.status = request_data.get('status')
 
+        if self.order.customer_id is None:
+            return jsonify({'response': 'customer id empty'}), 400
+
         db.session.add(self.order)
         db.session.commit()
 
         owner_active = self.customer.query.filter_by(id=self.order.customer_id).first()
         owner_active.is_active = True
 
-        if owner_active.start_date == None:
+        if owner_active.start_date is None:
             owner_active.start_date = datetime.now()
 
         db.session.add(owner_active)
