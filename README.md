@@ -45,7 +45,7 @@ source .envrc
 
 #### Note
 
-Remember to set a .env file for docker-compose postgres
+Remember to set a .env file for docker-compose postgres and run `docker-compose up -d` for creating a postgres instance
 
 ![env.example](https://github.com/Edmartt/WorkOrders/blob/dev/env.example)
 
