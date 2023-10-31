@@ -13,6 +13,6 @@ orders_bp.add_url_rule('/api/v1/orders', view_func=orders_http, methods=['POST']
 
 orders_bp.add_url_rule('/api/v1/orders/<string:id>', view_func=order_get_id, methods=['GET'])
 
-orders_bp.add_url_rule('/api/v1/orders/range', view_func=orders_http, methods=['GET'])
+orders_bp.add_url_rule('/api/v1/orders', view_func=orders_http, methods=['GET'])
 
 orders_bp.add_url_rule('/api/v1/orders/status', view_func=order_status_change, methods=['POST'])
