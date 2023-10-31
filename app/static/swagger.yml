@@ -49,7 +49,7 @@ paths:
                           type: boolean
                           description: Customer status
                           default: false
-
+        
     post:
       summary: Creates New Customers
       description: This endpoint allows you to create new customers
@@ -84,9 +84,9 @@ paths:
                           type: string
                           description: Created customer ID
   
-  /orders/range:
+  /orders:
     get:
-      summary: Work Orders
+      summary: Work Orders by date range
       description: This endpoint allows you to retrieve a list of work orders by date range
       parameters:
         - name: since
@@ -157,6 +157,7 @@ paths:
 
   /orders/{id}:
     get:
+      summary: Retrieves all work orders by customer ID
       description: This endpoint allows to retrieve a list of work orders by customer ID
       parameters:
         - in: path
