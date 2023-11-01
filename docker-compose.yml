@@ -27,6 +27,32 @@ services:
       retries: 5
       start_period: 80s  
 
+  redis_service:
+
+    image: "redis:7.2.2-alpine"
+
+    restart: always
+
+    ports: 
+    - 6001:6379
+
+      #command:
+      #- /bin/sh
+      #- -c
+    # - Double dollars, so that the variable is not expanded by Docker Compose
+    # - Surround by quotes, so that the shell does not split the password
+    # - The ${variable:?message} syntax causes shell to exit with a non-zero
+    #   code and print a message, when the variable is not set or empty
+    #- redis-server --requirepass "$${REDIS_PASSWORD:?REDIS_PASSWORD variable is not set}"
+    volumes:
+      - pg-data:/var/lib/redis/data
+      - ./redis.conf:/usr/local/etc/redis/redis.conf
+
+    env_file:
+      - ".env"
+    networks:
+      - orders
+
 networks:
   orders:
     driver: bridge
