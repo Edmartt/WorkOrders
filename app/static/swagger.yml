@@ -15,6 +15,8 @@ paths:
   /customer:
     get:
       summary: Get Active Customers
+      tags:
+        - customers
       description: |
         This endpoint allows you to retrieve a list of active customers.
       responses:
@@ -52,6 +54,8 @@ paths:
         
     post:
       summary: Creates New Customers
+      tags:
+        - customers
       description: This endpoint allows you to create new customers
       requestBody: 
         content:
@@ -87,6 +91,8 @@ paths:
   /orders:
     get:
       summary: Work Orders by date range
+      tags:
+        - orders
       description: This endpoint allows you to retrieve a list of work orders by date range
       parameters:
         - name: since
@@ -152,12 +158,63 @@ paths:
                         order_title:
                           type: string
                           description: orders title
+    post:
+      summary: Creates work orders
+      tags:
+        - orders
+      description: This endpoint allows to create new work orders
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                customer_id:
+                  type: string
+                  format: uuid
+                title:
+                  type: string
+                planned_date_begin:
+                  type: string
+                  format: date
+                planned_date_end:
+                  type: string
+                  format: date
+                status:
+                  type: string
+                  enum:
+                    - new
+                    - cancelled
+                    - done
+
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  response:
+                    type: string
+                    items:
+                      type: object
+                      properties:
+                        order_id:
+                          type: string
+
+
+
+
 
 
 
   /orders/{id}:
     get:
       summary: Retrieves all work orders by customer ID
+      tags:
+        - orders
       description: This endpoint allows to retrieve a list of work orders by customer ID
       parameters:
         - in: path
