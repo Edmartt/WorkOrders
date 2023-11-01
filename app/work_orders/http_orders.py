@@ -1,8 +1,9 @@
 from datetime import datetime
 from typing import OrderedDict
-from flask import json, request, jsonify
+from flask import request, jsonify
 from flask.views import MethodView
 from app import db
+from app.redis_pkg.redis import RedisConnection
 from app.models import Customer, WorkOrder
 from .helpers.date_format_check import check_date_format
 
@@ -119,12 +120,17 @@ class StatusOrderChange(MethodView):
         data = request.get_json()
         new_status = data.get('status')
         order_id = data.get('order_id')
-        work_order = WorkOrder()
         result = WorkOrder.query.filter_by(id=order_id).first()
         result.status = new_status
-        work_order.status = new_status
 
         db.session.add(result)
         db.session.commit()
+
+        order_dict = {'id': str(result.id), 'order_title': result.title, 'order_planned_date_begin': str(result.planned_date_begin), 'planned_date_end': str(result.planned_date_end), 'customer_id': str(result.customer_id), 'status': result.status}
+
+        if result.status == 'done':
+            redis_object = RedisConnection()
+            redis_connection = redis_object.get_connection()
+            redis_connection.xadd('order_done', order_dict, '*')
 
         return jsonify({'response': 'status updated'}), 201

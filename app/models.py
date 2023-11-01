@@ -33,7 +33,7 @@ class WorkOrder(db.Model):
     planned_date_begin = db.Column(db.DateTime(timezone=True))
     planned_date_end = db.Column(db.DateTime(timezone=True))
     status = db.Column(db.Enum('new', 'done', 'cancelled', name='status type'))
-    created_at = db.Column(db.DateTime(timezone=False), default=datetime.datetime.now().replace(microsecond=0))
+    created_at = db.Column(db.Date, default=datetime.datetime.now().replace(microsecond=0))
 
     def __repr__(self) -> str:
         return '<WorkOrder %r>' % self.title
