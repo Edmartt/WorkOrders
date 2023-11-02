@@ -119,18 +119,21 @@ class StatusOrderChange(MethodView):
     def post(self):
         data = request.get_json()
         new_status = data.get('status')
-        order_id = data.get('order_id')
-        result = WorkOrder.query.filter_by(id=order_id).first()
-        result.status = new_status
 
-        db.session.add(result)
-        db.session.commit()
+        if new_status == 'new' or new_status == 'cancelled' or new_status == 'done':
+            order_id = data.get('order_id')
+            result = WorkOrder.query.filter_by(id=order_id).first()
+            result.status = new_status
 
-        order_dict = {'id': str(result.id), 'order_title': result.title, 'order_planned_date_begin': str(result.planned_date_begin), 'planned_date_end': str(result.planned_date_end), 'customer_id': str(result.customer_id), 'status': result.status}
+            db.session.add(result)
+            db.session.commit()
 
-        if result.status == 'done':
-            redis_object = RedisConnection()
-            redis_connection = redis_object.get_connection()
-            redis_connection.xadd('order_done', order_dict, '*')
+            order_dict = {'id': str(result.id), 'order_title': result.title, 'order_planned_date_begin': str(result.planned_date_begin), 'planned_date_end': str(result.planned_date_end), 'customer_id': str(result.customer_id), 'status': result.status}
 
-        return jsonify({'response': 'status updated'}), 201
+            if result.status == 'done':
+                redis_object = RedisConnection()
+                redis_connection = redis_object.get_connection()
+                redis_connection.xadd('order_done', order_dict, '*')
+
+            return jsonify({'response': 'status updated'}), 201
+        return jsonify({'response': 'this option status is not allowed'}), 400
