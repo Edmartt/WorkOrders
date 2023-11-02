@@ -3,9 +3,9 @@
 ## Requirements
 
 - Python 3.11
-- Flask
 - PostgreSQL
 - Docker
+- Redis
 
 
 Work order REST API
