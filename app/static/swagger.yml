@@ -274,3 +274,43 @@ paths:
                         order_title:
                           type: string
                           description: orders title
+
+  /orders/status:
+
+    post:
+      summary: Updates order status
+      tags:
+        - orders
+      description: This endpoint allows to update orders status and if the status is "done" it will send and event through redis stream
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                order_id:
+                  type: string
+                  format: uuid
+                status:
+                  type: string
+                  enum:
+                    - new
+                    - cancelled
+                    - done
+
+      responses:
+        '200':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  response:
+                    type: string
+                    items:
+                      type: object
+                      properties:
+                        message:
+                          type: string
