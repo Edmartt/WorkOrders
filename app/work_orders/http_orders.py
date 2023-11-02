@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import OrderedDict
+from collections import OrderedDict
 from flask import request, jsonify
 from flask.views import MethodView
 from app import db
@@ -52,7 +52,6 @@ class OrdersHTTP(MethodView):
             data.append(customer_orders)
 
         return jsonify({'orders': data})
-
     
     #creates order
     def post(self):
@@ -79,44 +78,8 @@ class OrdersHTTP(MethodView):
         
         return jsonify({'response': self.order.id}), 201
 
-class HTTPOrderID(MethodView):
+    def put(self):
 
-    #get order by customer id
-    def get(self, id:str):
-        #data = request.get_json()
-        customer_id = id
-        if customer_id is None or customer_id == '':
-            return jsonify({'response': 'customer id not sent'}), 401
-
-        
-        orders = (db.session.query(WorkOrder, Customer).join(Customer, WorkOrder.customer_id == Customer.id).filter(WorkOrder.customer_id==customer_id).all())
-
-        data = []
-
-        for order, customer in orders:
-            customer_orders = OrderedDict()
-            customer_orders['order_id'] = order.id
-            customer_orders['order_title'] = order.title
-            customer_orders['order_planned_date_begin'] = order.planned_date_begin
-            customer_orders['order_planned_date_end'] = order.planned_date_end
-            customer_orders['order_status'] = order.status
-            customer_orders['order_created_at'] = order.created_at
-            customer_orders['customer_id'] = customer.id
-            customer_orders['customer_first_name'] = customer.first_name
-            customer_orders['customer_last_name'] = customer.last_name
-            customer_orders['customer_address'] = customer.address
-            customer_orders['customer_start_date'] = customer.start_date
-            customer_orders['customer_end_date'] = customer.end_date
-            customer_orders['customer_is_active'] = customer.is_active
-                    
-            data.append(customer_orders)
-
-        return jsonify({'response': data})
-
-#change status order
-class StatusOrderChange(MethodView):
-
-    def post(self):
         data = request.get_json()
         new_status = data.get('status')
 
@@ -125,7 +88,6 @@ class StatusOrderChange(MethodView):
             result = WorkOrder.query.filter_by(id=order_id).first()
             result.status = new_status
 
-            db.session.add(result)
             db.session.commit()
 
             order_dict = {'id': str(result.id), 'order_title': result.title, 'order_planned_date_begin': str(result.planned_date_begin), 'planned_date_end': str(result.planned_date_end), 'customer_id': str(result.customer_id), 'status': result.status}
@@ -135,5 +97,49 @@ class StatusOrderChange(MethodView):
                 redis_connection = redis_object.get_connection()
                 redis_connection.xadd('order_done', order_dict, '*')
 
-            return jsonify({'response': 'status updated'}), 201
+            return jsonify({'response': 'status updated', 'object': order_dict}), 200
         return jsonify({'response': 'this option status is not allowed'}), 400
+
+class HTTPOrderID(MethodView):
+
+    #get order by customer id
+    def get(self, id:str):
+        #data = request.get_json()
+        customer_id = id
+        if customer_id is None or customer_id == '':
+            return jsonify({'response': 'customer id not sent'}), 400
+
+        
+        orders = (db.session.query(WorkOrder, Customer).join(Customer, WorkOrder.customer_id == Customer.id).filter(WorkOrder.customer_id==customer_id).all())
+
+        data = []
+
+
+        for order, customer in orders:
+
+            customer_orders = {}
+            customer_orders['customer_orders'] = {}
+            customer_data = {}
+            customer_data['customer_data'] = {}
+            data_dict ={}
+            customer_orders['order_id'] = order.id
+            customer_orders['customer_id'] = order.customer_id
+            customer_orders['order_title'] = order.title
+            customer_orders['order_planned_date_begin'] = order.planned_date_begin
+            customer_orders['order_planned_date_end'] = order.planned_date_end
+            customer_orders['order_status'] = order.status
+            customer_orders['order_created_at'] = order.created_at
+            customer_data['customer_data']['customer_id'] = customer.id
+            customer_data['customer_data']['customer_first_name'] = customer.first_name
+            customer_data['customer_data']['customer_last_name'] = customer.last_name
+            customer_data['customer_data']['customer_address'] = customer.address
+            customer_data['customer_data']['customer_start_date'] = customer.start_date
+            customer_data['customer_data']['customer_end_date'] = customer.end_date
+            customer_data['customer_data']['customer_is_active'] = customer.is_active
+
+            customer_data['customer_orders'] = customer_orders
+            data_dict['order_response'] = customer_data
+
+            data.append(data_dict)
+
+        return jsonify({'orders': data})

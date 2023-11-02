@@ -87,7 +87,75 @@ paths:
                         customer_id:
                           type: string
                           description: Created customer ID
-  
+
+
+
+  /orders/{id}:
+    get:
+      summary: Retrieves all work orders by customer ID
+      tags:
+        - orders
+      description: This endpoint allows to retrieve a list of work orders by customer ID
+      parameters:
+        - in: path
+          name: id
+          description: customer id
+          schema:
+            type: string
+            required: true
+          example: 290c21e3-eb65-4a6f-ac45-4ad7e01f3372
+
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  response:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        customer_id:
+                          type: string
+                          description: Customer id
+                        customer_first_name:
+                          type: string
+                          description: Customer first name
+                        customer_last_name:
+                          type: string
+                          description: Customer last name
+                        customer_ start_date:
+                          type: string
+                          description: The moment when the first order is finished
+                        customer_end_date:
+                          type: string
+                          description: .
+                        customer_is_active:
+                          type: boolean
+                          description: Customer status
+                          default: false
+                        order_created_at:
+                          type: date
+                          description: date when the order was created
+                        order_id:
+                          type: string
+                          description: order identifier
+                        order_planned_date_begin:
+                          type: date
+                        order_planned_date_end:
+                          type: date
+                        order_status:
+                          type: string
+                          description: order status according if done, cancelled or new
+                          example: new
+                        order_title:
+                          type: string
+                          description: orders title
+
+
   /orders:
     get:
       summary: Work Orders by date range
@@ -205,79 +273,7 @@ paths:
                           type: string
 
 
-
-
-
-
-
-  /orders/{id}:
-    get:
-      summary: Retrieves all work orders by customer ID
-      tags:
-        - orders
-      description: This endpoint allows to retrieve a list of work orders by customer ID
-      parameters:
-        - in: path
-          name: id
-          description: customer id
-          schema:
-            type: string
-            required: true
-          example: 290c21e3-eb65-4a6f-ac45-4ad7e01f3372
-
-      responses:
-        '200':
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  response:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        customer_id:
-                          type: string
-                          description: Customer id
-                        customer_first_name:
-                          type: string
-                          description: Customer first name
-                        customer_last_name:
-                          type: string
-                          description: Customer last name
-                        customer_ start_date:
-                          type: string
-                          description: The moment when the first order is finished
-                        customer_end_date:
-                          type: string
-                          description: .
-                        customer_is_active:
-                          type: boolean
-                          description: Customer status
-                          default: false
-                        order_created_at:
-                          type: date
-                          description: date when the order was created
-                        order_id:
-                          type: string
-                          description: order identifier
-                        order_planned_date_begin:
-                          type: date
-                        order_planned_date_end:
-                          type: date
-                        order_status:
-                          type: string
-                          description: order status according if done, cancelled or new
-                          example: new
-                        order_title:
-                          type: string
-                          description: orders title
-
-  /orders/status:
-
-    post:
+    put:
       summary: Updates order status
       tags:
         - orders
@@ -301,7 +297,7 @@ paths:
 
       responses:
         '200':
-          description: Created
+          description: Updated
           content:
             application/json:
               schema:
@@ -312,5 +308,6 @@ paths:
                     items:
                       type: object
                       properties:
-                        message:
-                          type: string
+                        object:
+                          type: array
+
