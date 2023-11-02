@@ -37,7 +37,12 @@ python -m venv <virtual-environment-name>
 source <virtual-environment-name>/bin/activate
 ```
 
-5. Set the environment variables following the envrc.example file here ![.envrc.example](https://github.com/Edmartt/WorkOrders/blob/dev/.envrc.example)
+5. Install dependencies
+```
+pip3 install -r requirements
+```
+
+6. Set the environment variables following the envrc.example file here ![.envrc.example](https://github.com/Edmartt/WorkOrders/blob/dev/.envrc.example)
 
 ```
 source .envrc
@@ -48,7 +53,7 @@ source .envrc
 Remember to set a .env file for docker-compose ![env.example](https://github.com/Edmartt/WorkOrders/blob/dev/env.example) and run `docker-compose up -d` for creating a postgres instance
 
 
-6. Migrations
+7. Migrations
 
 We need migrations for our data models
 
@@ -56,7 +61,7 @@ We need migrations for our data models
 flask db upgrade
 ```
 
-7. Run with
+8. Run with
 
 ```
 flask run
