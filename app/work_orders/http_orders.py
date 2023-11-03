@@ -1,6 +1,6 @@
 from datetime import datetime
 from collections import OrderedDict
-from flask import request, jsonify
+from flask import json, request, jsonify
 from flask.views import MethodView
 from app import db
 from app.redis_pkg.redis import RedisConnection
@@ -61,6 +61,11 @@ class OrdersHTTP(MethodView):
         self.order.title = request_data.get('title')
         self.order.status = request_data.get('status')
 
+        customer = self.customer.query.filter_by(id=self.order.customer_id).first()
+
+        if customer is None:
+            return jsonify({'response': 'customer_id not found: {}'.format(self.order.customer_id)}), 404
+
         if self.order.customer_id is None:
             return jsonify({'response': 'customer id empty'}), 400
 
@@ -83,22 +88,29 @@ class OrdersHTTP(MethodView):
         data = request.get_json()
         new_status = data.get('status')
 
-        if new_status == 'new' or new_status == 'cancelled' or new_status == 'done':
-            order_id = data.get('order_id')
-            result = WorkOrder.query.filter_by(id=order_id).first()
-            result.status = new_status
+        allowed_statuses = ['new', 'cancelled', 'done']
 
-            db.session.commit()
+        if new_status not in allowed_statuses:
+            return jsonify({'response': 'this status is not allowed: {}'.format(new_status)}), 400
 
-            order_dict = {'id': str(result.id), 'order_title': result.title, 'order_planned_date_begin': str(result.planned_date_begin), 'planned_date_end': str(result.planned_date_end), 'customer_id': str(result.customer_id), 'status': result.status}
+        order_id = data.get('order_id')
+        result = WorkOrder.query.filter_by(id=order_id).first()
 
-            if result.status == 'done':
-                redis_object = RedisConnection()
-                redis_connection = redis_object.get_connection()
-                redis_connection.xadd('order_done', order_dict, '*')
+        if result is None:
+            return jsonify({'response': 'this order ID does not exists: {}'.format(order_id)}), 404
 
-            return jsonify({'response': 'status updated', 'object': order_dict}), 200
-        return jsonify({'response': 'this option status is not allowed'}), 400
+        result.status = new_status
+
+        db.session.commit()
+
+        order_dict = {'id': str(result.id), 'order_title': result.title, 'order_planned_date_begin': str(result.planned_date_begin), 'planned_date_end': str(result.planned_date_end), 'customer_id': str(result.customer_id), 'status': result.status}
+
+        if result.status == 'done':
+            redis_object = RedisConnection()
+            redis_connection = redis_object.get_connection()
+            redis_connection.xadd('order_done', order_dict, '*')
+
+        return jsonify({'response': 'status updated', 'object': order_dict}), 200
 
 class HTTPOrderID(MethodView):
 
@@ -108,6 +120,11 @@ class HTTPOrderID(MethodView):
         customer_id = id
         if customer_id is None or customer_id == '':
             return jsonify({'response': 'customer id not sent'}), 400
+
+        customer_result = Customer.query.filter_by(id=customer_id).first()
+
+        if customer_result is None:
+            return jsonify({'response': 'customer ID not found: {}'.format(customer_id)}), 404
 
         
         orders = (db.session.query(WorkOrder, Customer).join(Customer, WorkOrder.customer_id == Customer.id).filter(WorkOrder.customer_id==customer_id).all())
