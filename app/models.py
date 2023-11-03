@@ -30,8 +30,8 @@ class WorkOrder(db.Model):
     id = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
     customer_id = db.Column(UUID(as_uuid=True), db.ForeignKey('customers.id'))
     title = db.Column(db.String(64))
-    planned_date_begin = db.Column(db.Date)
-    planned_date_end = db.Column(db.Date)
+    planned_date_begin = db.Column(db.DateTime)
+    planned_date_end = db.Column(db.DateTime)
     status = db.Column(db.Enum('new', 'done', 'cancelled', name='status type'))
     created_at = db.Column(db.Date, default=datetime.datetime.now().replace(microsecond=0))
 
