@@ -17,8 +17,7 @@ paths:
       summary: Get Active Customers
       tags:
         - customers
-      description: |
-        This endpoint allows you to retrieve a list of active customers.
+      description: This endpoint allows you to retrieve a list of active customers.
       responses:
         '200':
           description: Successful response
@@ -154,6 +153,21 @@ paths:
                         order_title:
                           type: string
                           description: orders title
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  response:
+                    type: string
+                    items:
+                      type: object
+                      properties:
+                        order_id:
+                          type: string
+
 
 
   /orders:
@@ -245,10 +259,10 @@ paths:
                   type: string
                 planned_date_begin:
                   type: string
-                  format: date
+                  format: date-time
                 planned_date_end:
                   type: string
-                  format: date
+                  format: date-time
                 status:
                   type: string
                   enum:
@@ -259,6 +273,20 @@ paths:
       responses:
         '201':
           description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  response:
+                    type: string
+                    items:
+                      type: object
+                      properties:
+                        order_id:
+                          type: string
+        '404':
+          description: Not Found
           content:
             application/json:
               schema:
@@ -304,10 +332,50 @@ paths:
                 type: object
                 properties:
                   response:
-                    type: string
+                    type: array
                     items:
                       type: object
                       properties:
-                        object:
-                          type: array
+                        order_id:
+                          type: string
+                          format: uuid
+                        customer_id:
+                          type: string
+                          format: uuid
+                        order_title:
+                          type: string
+                        order_planned_date_begin:
+                          type: string
+                          format: date-time
+                        order_planned_date_end:
+                          type: string
+                          format: date-time
+                        status:
+                          type: string
+                          enum:
+                            - new
+                            - cancelled
+                            - done
 
+
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  response:
+                    type: string
+                    example: ID not found
+
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  response:
+                    type: string
+                    example: Status not allowed
