@@ -1,14 +1,18 @@
 from datetime import datetime
 from collections import OrderedDict
-from flask import json, request, jsonify
+from flask import request, jsonify
 from flask.views import MethodView
 from app import db
 from app.redis_pkg.redis import RedisConnection
 from app.models import Customer, WorkOrder
 from .helpers.date_format_check import check_date_format
+from app.security import auth_decorator
+from app.work_orders.errors.errors import not_authorized
 
 
 class OrdersHTTP(MethodView):
+
+    decorators = [auth_decorator]
 
     def __init__(self, order: WorkOrder, customer: Customer) -> None:
         self.order = order
@@ -113,6 +117,8 @@ class OrdersHTTP(MethodView):
         return jsonify({'response': 'status updated', 'object': order_dict}), 200
 
 class HTTPOrderID(MethodView):
+
+    decorators = [auth_decorator]
 
     #get order by customer id
     def get(self, id:str):
