@@ -2,8 +2,12 @@ from flask import jsonify, request
 from flask.views import MethodView
 from app.models import Customer
 from app import db
+from app.security import auth_decorator
+from app.customers.errors.errors import not_authorized
 
 class CustomerHTTP(MethodView):
+
+    decorators = [auth_decorator]
 
     def __init__(self, customer: Customer) -> None:
         self.customer = customer
