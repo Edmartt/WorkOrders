@@ -4,7 +4,7 @@ from flask import request, jsonify
 from flask.views import MethodView
 from app import db
 from app.redis_pkg.redis import RedisConnection
-from app.models import Customer, WorkOrder
+from app.models import CustomerORM, WorkOrderORM
 from .helpers.date_format_check import check_date_format
 from app.security import auth_decorator
 from app.work_orders.errors.errors import not_authorized
@@ -14,7 +14,7 @@ class OrdersHTTP(MethodView):
 
     decorators = [auth_decorator]
 
-    def __init__(self, order: WorkOrder, customer: Customer) -> None:
+    def __init__(self, order: WorkOrderORM, customer: CustomerORM) -> None:
         self.order = order
         self.customer = customer
 
@@ -33,7 +33,7 @@ class OrdersHTTP(MethodView):
                 type(check_until_date) == ValueError:
                     return jsonify({'response': 'wrong date format. Use YYYY-MM-DD'}), 400
 
-        orders = (db.session.query(WorkOrder, Customer).join(Customer, WorkOrder.customer_id == Customer.id).filter(WorkOrder.created_at.between(since, until)).all())
+        orders = (db.session.query(WorkOrderORM, CustomerORM).join(CustomerORM, WorkOrderORM.customer_id == CustomerORM.id).filter(WorkOrderORM.created_at.between(since, until)).all())
 
         data = []
 
@@ -98,7 +98,7 @@ class OrdersHTTP(MethodView):
             return jsonify({'response': 'this status is not allowed: {}'.format(new_status)}), 400
 
         order_id = data.get('order_id')
-        result = WorkOrder.query.filter_by(id=order_id).first()
+        result = WorkOrderORM.query.filter_by(id=order_id).first()
 
         if result is None:
             return jsonify({'response': 'this order ID does not exists: {}'.format(order_id)}), 404
@@ -127,13 +127,13 @@ class HTTPOrderID(MethodView):
         if customer_id is None or customer_id == '':
             return jsonify({'response': 'customer id not sent'}), 400
 
-        customer_result = Customer.query.filter_by(id=customer_id).first()
+        customer_result = CustomerORM.query.filter_by(id=customer_id).first()
 
         if customer_result is None:
             return jsonify({'response': 'customer ID not found: {}'.format(customer_id)}), 404
 
         
-        orders = (db.session.query(WorkOrder, Customer).join(Customer, WorkOrder.customer_id == Customer.id).filter(WorkOrder.customer_id==customer_id).all())
+        orders = (db.session.query(WorkOrderORM, CustomerORM).join(CustomerORM, WorkOrderORM.customer_id == CustomerORM.id).filter(WorkOrderORM.customer_id==customer_id).all())
 
         data = []
 
