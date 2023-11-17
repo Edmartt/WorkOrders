@@ -1,9 +1,9 @@
-from app.models import Customer, WorkOrder
+from app.models import CustomerORM, WorkOrderORM
 from app.work_orders.http_orders import OrdersHTTP, HTTPOrderID
 from . import orders_bp
 
-order = WorkOrder()
-customer = Customer()
+order = WorkOrderORM()
+customer = CustomerORM()
 
 orders_http = OrdersHTTP.as_view('orders', order, customer)
 order_get_id = HTTPOrderID.as_view('by id')
